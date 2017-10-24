@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+{% load widget_tweaks %}
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>PTEN</title>
+    <link rel="stylesheet" href="{% static 'stylesheets/login.css' %}" type="text/css" charset="utf-8" />
+    <link rel="stylesheet" href="{% static 'assets/centralesans/stylesheet.css' %}" type="text/css" charset="utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+</head>
+
+<body>
+    <form action="." method="post">
+        {% csrf_token %}
+        <div class="branding">
+            <div id="shield">
+            </div>
+            <div class="login_applicationTitle">
+                PTEN
+            </div>
+
+            <div class="inputgroup">
+
+                {{ form.username | add_class:"boxinput" | attr:"type:text" | attr:"placeholder:Enter Username" }}
+                {{ form.password | add_class:"boxinput" | attr:"type:text" | attr:"placeholder:Enter Password" }}
+                <svg version="1.1" class="right" viewBox="0 0 36 36">
+                    <g>
+                        <g>
+                            <circle fill="#FF7C38" cx="18" cy="18" r="18" />
+                        </g>
+                        <g>
+                            <path fill="#FFFFFF" d="M20.036,25.188c0,0.961-0.576,1.32-1.44,1.32c-0.84,0-1.416-0.359-1.416-1.32
+			c0-0.887,0.576-1.295,1.416-1.295C19.46,23.893,20.036,24.301,20.036,25.188z M19.676,21.42h-2.04L17.252,9.419h2.808
+			L19.676,21.42z" />
+                        </g>
+                    </g>
+                </svg>
+                {% if form.non_field_errors %}
+                <div class='error_message clearfix error'>
+                  <div class='tick clearfix'></div>
+                  <div class='block clearfix'>
+                   {% for error in form.non_field_errors %}
+                    {{ error }}
+                  {% endfor %} </div>
+
+                </div>
+                {% endif %}
+
+                <a>
+                    <input type="submit" value="Login">
+                </a>
+                <label id="remember">
+                    <input type="checkbox" /> Remember me</label>
+                <div class="clear"></div>
+            </div>
+        </div>
+        <div class="subActionContainer">
+            <div class="subAction">
+                Forgot password?
+            </div>
+            <div class="subAction">
+                Sign up
+            </div>
+            <div class="clear"></div>
+            <div class="copyright clearfix">
+                Copyrights and all other proprietary rights in any software and related documentation ("Software") made available to you rest exclusively with Philips or its licensors. No title or ownership in the Software is conferred to you. Use of the Software is
+                subject to the end user license conditions as are available on request.
+            </div>
+        </div>
+    </form>
+
+</body>
+
+
+</html>
+

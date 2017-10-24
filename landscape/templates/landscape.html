@@ -1,0 +1,278 @@
+ {% extends "base_new.html" %}
+ {% load staticfiles %}
+ {% block head %}
+ <style>
+    textarea {
+    overflow-y: scroll;
+    height: 200px;
+    width: 100%;
+   
+
+ }
+.box{
+
+    margin:10px 10px 10px 10px;
+}
+.toolTip {
+
+        position: absolute;
+        display: none;
+        width: auto;
+        height: auto;
+        background: none repeat scroll 0 0 white;
+        border: 0 none;
+        border-radius: 8px 8px 8px 8px;
+        box-shadow: -3px 3px 15px #888888;
+        color: black;
+        font: 15px ;
+        padding: 5px;
+        text-align: center;
+    }
+
+  .chart rect {
+  /*  fill: steelblue;*/
+  }
+
+  .chart text {
+    fill: white;
+    font: 14px ;
+    text-anchor: middle;
+  }
+  .chart {
+
+    background-color: #fff;
+  }
+  .btn {
+    background: #0f75a5;
+    border: none;
+    color: white;
+    padding: 8px 26px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+ </style>
+
+ <script src="https://d3js.org/d3.v4.min.js"></script>
+ <script>
+
+    function drawBar(obj,sections){
+
+    var section = d3.keys(sections);
+    console.log(section);
+    var data = d3.values(sections);
+
+	  var colors = ['#33cccc','#cc6666','#ffcc99','#cc99cc','#9966ff','#49274a']
+
+
+//data.sort(d3.descending());
+
+	var width = "100%",
+	    height = 30,
+		goal = 600,
+		perc_so_far = 0;
+
+	//console.log(d3.sum(data));
+	var total_time = d3.sum(data);
+	var bar_x = 0;
+	var chart = obj
+		.attr("width", "100%")
+		.attr("height", height);
+		bar_x = 0;
+		//var chart_width = chart.style("width").replace("px", "");
+	var chart_width = parseInt(chart.style("width"));
+	console.log(chart_width);
+
+
+	var bar = chart.selectAll("g")
+		.data(data)
+		.enter().append("g");
+		console.log(bar);
+	bar.append("rect")
+		.attr("width", function(d) { return ((d/total_time)*100) + "%"; } )
+		.attr("x", function(d) {
+			var prev_perc = perc_so_far;
+			var this_perc = 100*(d/total_time);
+			perc_so_far = perc_so_far + this_perc;
+
+			return prev_perc + "%";
+		})
+		.attr("height", height)
+		.attr("fill",  function(d,i) { return colors[i] } );
+
+	perc_so_far = 0;
+	bar.append("text")
+
+		//.attr("y", 11)
+
+		.attr("x", function(d) {
+			var prev_perc = perc_so_far;
+			var this_perc = 100*(d/total_time);
+			perc_so_far = perc_so_far + this_perc;
+
+			return prev_perc + (this_perc/2) + "%";
+		})
+		.attr("dy", "1.15em")
+		.text(function(d) { return d==0 ? null : (100*(d/total_time)).toFixed(0) + "%"; });
+
+	   bar
+	            .on("mousemove", function(d,i){
+	                div.style("left", d3.event.pageX+10+"px");
+	                div.style("top", d3.event.pageY-25+"px");
+	                div.style("display", "inline-block");
+	                div.html((section[i]) + " : " + d);
+	            });
+	    bar
+	            .on("mouseout", function(d){
+	                div.style("display", "none");
+	            });
+
+
+	d3.select(window).on('resize', resize);
+
+	};
+
+
+	function resize () {
+		var width = parseInt(d3.select("#chart").style("width"));
+		//console.log(width);
+		//console.log(bar);
+	}
+
+</script>
+
+ 
+
+ {% endblock%}
+ {% block content %}
+
+<script>
+             var div = d3.select("body").append("div").attr("class", "toolTip");
+</script>
+<p class="wrapper">
+
+
+    <div class="row">
+          <div class="col-32">
+              <h3>Introduction</h3>
+              <h5>
+                Input terms, one per line.</br>
+                To match case exactly, append a '#'.</br>
+              </h5>
+          </div>
+         <div class="col-32">
+
+             <form id="reg" action="" method="post">
+                {% csrf_token %}
+                 {{ form }}
+
+                <div class="right">
+                         <input class="noselect Submit" type="submit" id="SubmitMatch">
+
+                        </input>
+
+                </div>
+             <form id="file">
+                 <input type="file" id="inputfile"/>
+             </form>
+             </form>
+         </div>
+         <div class="col-32">
+         <a id="exportJSON" onclick="exportJson(this);" class="btn"><i ></i> export json</a>
+         <script>
+            function exportJson(el) {
+
+            var obj = {{ data | safe }}
+            var data = "text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(obj));
+            // what to return in order to show download window?
+
+            el.setAttribute("href", "data:"+data);
+            el.setAttribute("download", "data.json");
+
+}
+         </script>
+         </div>
+           {% for res in rs %}
+
+           <div id="rs_{{ forloop.counter }}" class="wrapper">
+
+           {% ifequal res.total 0 %}
+           <div class="row box">
+               <div class="col-20">
+
+               <h6>Term:
+               <span  style="color:black;" >{{ res.label }}</span>
+
+               <span style="color:black;">NO Result</span></h6>
+
+           </div>
+               </div>
+           {% else %}
+              <div class="row box">
+            <div class="col-32">
+               <h6>Term:
+               <span style="{% if res.case_sensitive  %} color:red {% else %} color:black {% endif  %};">{{ res.label }}</span>
+               Trial Number:
+               <span style="color:black;">{{ res.doc }}</span>
+               Term Frequency:
+               <span style="color:black;">{{ res.total }}</span></h6>
+
+           </div>
+
+           <div class="col-32">
+               <svg id="chart{{ forloop.counter }}" class="chart"></svg>
+           </div>
+           </div>
+            <script>
+            var obj{{ forloop.counter }} = d3.select("#chart{{ forloop.counter }}");
+            var data{{ forloop.counter }} = {'Title':{{ res.Title }},
+            'Exclusion':{{ res.Exclusion }},'Inclusion':{{ res.Inclusion }},'Purpose':{{ res.Purpose }},'Description':{{ res.description }}};
+            drawBar(obj{{ forloop.counter }},data{{ forloop.counter }});
+
+
+            </script>
+
+
+           {% endifequal %}
+
+           </div>
+
+
+           {% endfor %}
+
+
+
+    </div>
+
+    </div>
+
+
+
+
+
+ {% endblock %}
+
+ {% block script %}
+
+    var control = document.getElementById("inputfile");
+    if(control){ control.addEventListener("change", function(event){
+        
+         var reader = new FileReader();
+         reader.onload = function(event){
+             var contents = event.target.result;
+               document.getElementById('id_reg').value = contents;
+         };
+         reader.onerror = function(event){
+             console.error("File could not be read! Code " + event.target.error.code);
+         };
+         
+         reader.readAsText(control.files[0]);
+     }, false);
+ };
+
+
+
+
+ {% endblock %}

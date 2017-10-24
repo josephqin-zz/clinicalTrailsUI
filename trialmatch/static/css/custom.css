@@ -1,0 +1,97 @@
+.page-header {
+    background-image: url("../images/page-header-bgimg.png");
+    height: 60px;
+}
+
+.page-header h1, .page-header h1 a, .page-header h1 a:visited, .page-header h1 a:active {
+    color: rgba(255,255,255,1);
+    font-size: 1.7em;
+    padding-left: 5px;
+}
+
+.header-font {
+    font-size: 1.7em;
+    color: white;
+    padding: 5px;
+}
+
+.content {
+    margin-left: 40px;
+}
+
+#map1 {
+	margin-left: 50px;
+	margin-top: 30px;
+	margin-right: 10px;
+	width: 500px;
+	height: 300px;
+	background-color: #CCC;
+}
+
+#map{
+	
+	margin-top:1%;
+	
+	height: 400px;
+	background-color: #CCC;
+}
+
+
+h1, h2, h3, h4 {
+    font-family: 'Lobster';
+}
+
+.date {
+    float: right;
+    color: #828282;
+}
+
+.save {
+    float: right;
+}
+
+.post-form textarea, .post-form input {
+    width: 100%;
+}
+
+.top-menu, .top-menu:hover, .top-menu:visited {
+    color: #ffffff;
+    float: right;
+    font-size: 26pt;
+    margin-right: 20px;
+}
+
+.post {
+    margin-bottom: 70px;
+}
+
+.custombut {
+    margin-top: 1000px;
+}
+
+.post h1 a, .post h1 a:visited {
+    color: #000000;
+}
+
+.col-md-offset-right-8 {
+  margin-right: 66.66666667%;
+}
+
+.buttonsub{
+ margin-top: 10%;	
+}
+
+#parent {
+  display: flex;
+}
+#narrow {
+  width: 200px;
+  background: lightblue;
+  /* Just so it's visible */
+}
+#wide {
+  flex: 1;
+  /* Grow to rest of container */
+  background: lightgreen;
+  /* Just so it's visible */
+}

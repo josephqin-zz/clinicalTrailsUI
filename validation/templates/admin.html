@@ -1,0 +1,364 @@
+{% extends 'validation/base_validation.html'%}
+
+
+{% block sub_content %}
+
+<script>
+             var div = d3.select("body").append("div").attr("class", "toolTip");
+</script>
+
+<div class="Requestwrapper">
+            <div class="center clearfix selectedfilters">
+
+            </div>
+
+            <form class="RequestForm center clearfix allfilters" action="" method="post" >
+                <div class='row summary middle clearfix'>
+                    <h2>Add Query</h2>
+                    <div class='inputs' >
+                    {% for field in selectionform %}
+                    <div class="inputContainer" >
+                        <div class="adjust">
+                            <label for="id_{{ field.name }}">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+
+                    </div>
+                    {% endfor %}
+
+
+                    </div>
+                    <div class='right clearfix'>
+                        <input class="noselect Submit freeze" type="submit" value="Submit"/>
+                    </div>
+                </div>
+                <div class='inputs' id="queryform">
+                    {% for field in queryform %}
+                    <div class="inputContainer">
+                        <div class="adjust">
+                            <label for="id_{{ field.name }}">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                    </div>
+                     {% endfor %}
+                </div>
+                <div class='inputs'>
+                    {% for field in scenarioform %}
+                                        <div class="inputContainer">
+                                            <div class="adjust">
+                                                <label for="id_{{ field.name }}">{{ field.label }}</label>
+                                                {{ field }}
+                                            </div>
+                                        </div>
+                    {% endfor %}
+
+                <div class="inputContainer">
+                <div class="adjust">
+                {% csrf_token %}
+                </div>
+                </div>
+                </div>
+            </form>
+            <script>
+             $('#id_query').change(function(){
+              $('#queryform').find('input:text').val('');
+              $('#queryform').find('select').val('')
+             var queryID = $(this).val();
+             $.getJSON("./"+queryID,function(result){
+                $.each(result,function(i,field){
+                  $('#id_'+i).val(field);
+                });
+
+              });
+             });
+
+
+            </script>
+            <script type="text/javascript">
+                var remember = [];
+                var transitionEnd = transitionEndEventName();
+                var db = [];
+                var backuphtml;
+                var ContentWidth = 1100;
+                var sassReference = {
+                    'ContentPaddingTop': 32,
+                    'RequestFormBottom': 36,
+                    'lineHeight': 24
+                };
+
+
+                //fake database: db
+                $('.RequestForm .inputs input, .RequestForm .inputs select').each(function(i) {
+                    var item = {};
+                    item['name'] = this.name;
+                    item['index'] = i;
+                    item['selectedValue'] = null;
+                    item['confirmedValue'] = null;
+                    item['type'] = this.type;
+                    item['tagName'] = this.tagName.toLowerCase();
+                    db.push(item);
+                });
+
+                //record the height
+
+                var RequestHeight = $('.Requestwrapper').outerHeight();
+                var collapsedRequestHeight = sassReference.ContentPaddingTop/2 + sassReference.RequestFormBottom/2 + Math.ceil(db.length / 4) * sassReference.lineHeight;
+                // $('.Requestwrapper').css('transform',function(){return 'translateY('+ RequestHeight +')'})
+                //check whether the form canbe submitted -> whether the submit button is clickable
+                check_btn_state();
+
+                $('.Resultwrapper').css('transform','translateY('+ RequestHeight +'px)');
+                /////////////change the select style/////////////////
+                $('select').on('change', function() {
+                    var selectedVal = this.value;
+                    var selectedText = this.options[this.selectedIndex].text;
+                    var selectedItem;
+
+                    for (x in db) {
+                        if (db[x].name == this.name) {
+
+                            selectedItem = db[x];
+                            if (this.selectedIndex > 0) {
+                                db[x].selectedValue = selectedVal;
+                            } else db[x].selectedValue = null;
+                        }
+                    }
+
+                    if (this.selectedIndex > 0) {
+                        if ($(this).hasClass('selectedValue')) return;
+                        else {
+                            $(this).addClass('selectedValue');
+                        }
+                    } else {
+                        if ($(this).hasClass('selectedValue')) {
+                            $(this).removeClass('selectedValue');
+                        } else return;
+                    }
+
+                    check_btn_state();
+
+                });
+
+                $('.Resultwrapper').on('click',function(){
+                  if($('.Requestwrapper').hasClass('collapsed')){
+                    return;
+                  }else if($('.Submit').hasClass('freeze') == false){
+                    collapsed();
+                  }else return;
+                });
+
+                $('input').on('change', function() {
+                    var selectedVal = this.value;
+                    var selectedName = this.name;
+                    var selectedItem;
+                    for (x in db) {
+                        if (db[x].name == selectedName) {
+
+                            selectedItem = db[x];
+                            if (selectedVal == "") {
+                                selectedVal = null;
+                            }
+                            db[x].selectedValue = selectedVal;
+
+                        }
+                    }
+
+
+                    check_btn_state();
+                });
+
+                function collapsed(){
+                  var filledArray = [];
+
+                  var newForm;
+                  var showAll;
+                  for (x in db) {
+                      if ((db[x].selectedValue !== null)) {
+                          filledArray.push(db[x]);
+                      }
+                      db[x].confirmedValue = db[x].selectedValue;
+                  }
+                  backuphtml = $.extend(true, [], $('.RequestForm .inputs input, .RequestForm .inputs select'));
+
+
+                  $('.Requestwrapper').addClass('collapsed');
+                  $('.Resultwrapper').addClass('collapsed');
+                  //$('.Resultwrapper').css({'transform':'translateY('+ collapsedRequestHeight + 'px)'});
+                  $('.Resultwrapper').css({
+                        'margin-top': (96+collapsedRequestHeight) + 'px'
+                        });
+                  // $('.collapsed.Resultwrapper').css('transform', 'translateY(-204px)');
+                  $('.selectedfilters').one(transitionEnd, function() {
+
+                      $('.Requestwrapper .RequestForm').addClass('visuallyhidden');
+                      $('.Requestwrapper .RequestForm').addClass('hidden');
+
+                  });
+
+                  // $(".Requestwrapper.collapsed").css('max-height',100* Math.ceil(filledArray.length/3));
+                  var SelectedString = "Validation Administrator";
+                  var ele = document.createElement('h2');
+                   $(ele).text(SelectedString);
+                   $(ele).addClass('shrinked');
+                   $(ele).appendTo($('.selectedfilters'));
+
+
+
+                  $(".Requestwrapper.collapsed form input.shrinked").css('width', Math.min(900 / 4 - 20, (900 / filledArray.length) - 12));
+
+                  showAll = document.createElement('a');
+                  $(showAll).text('Add Query');
+                  $(showAll).addClass('showAll');
+                  $(showAll).addClass('clearfix right');
+                  $(showAll).prependTo($('.selectedfilters'));
+
+                };
+                function showTab(level, evt) {
+
+                    var i, tabcontent, tablinks;
+                    tabcontent = document.getElementsByClassName("tabcontent");
+                    for (i = 0; i < tabcontent.length; i++) {
+                        tabcontent[i].style.display = "none";
+                    }
+                    tablinks = document.getElementsByClassName("tablinks");
+                    for (i = 0; i < tablinks.length; i++) {
+                        tablinks[i].className = tablinks[i].className.replace(" active", "");
+                    }
+                    document.getElementById(level).style.display = "block";
+                    if (evt.currentTarget) {
+                        evt.currentTarget.className += " active";
+                    } else {
+                        evt.addClass('active');
+                    }
+
+                };
+
+            ////////////////////submit/////////////////////////////
+
+
+
+                $('body').on('click', 'a.showAll', function(e) {
+
+                    $('.Requestwrapper').removeClass('collapsed');
+                    $('.Resultwrapper').removeClass('collapsed');
+                    $('.selectedfilters').empty();
+                    $('.Requestwrapper .RequestForm').removeClass('hidden');
+                    setTimeout(function() {
+                        $('.Requestwrapper .RequestForm').removeClass('visuallyhidden');
+                    }, 200);
+
+                    $('.Resultwrapper').css({'transform':'translateY('+ RequestHeight + 'px)'});
+
+                });
+
+                function check_btn_state() {
+                    var ele = $('.Submit');
+                    var freeze = ele.hasClass('freeze');
+                    var selected = false;
+                    for (x in db) {
+                        if (db[x].selectedValue) {
+                            if (db[x].selectedValue.length > 0) {
+                                selected = true;
+                            }
+                        }
+                    }
+                    if ((freeze == true) && (selected == true)) {
+                        ele.removeClass('freeze');
+                    } else if ((freeze == false) && (selected == false)) {
+                        ele.addClass('freeze');
+                    }
+                }
+
+                function transitionEndEventName() {
+                    var i,
+                        undefined,
+                        el = document.createElement('div'),
+                        transitions = {
+                            'transition': 'transitionend',
+                            'OTransition': 'otransitionend', // oTransitionEnd in very old Opera
+                            'MozTransition': 'transitionend',
+                            'WebkitTransition': 'webkitTransitionEnd'
+                        };
+
+                    for (i in transitions) {
+                        if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
+                            return transitions[i];
+                        }
+                    }
+                }
+
+
+
+
+             </script>
+
+</div>
+<div class="Resultwrapper collapsed" style="margin-top: 602px;">
+
+            <div class='Result center'>
+                <ul class="Leveltab">
+                    {% for key,value in scenario.items %}
+
+                    <li><a class="tablinks" data-level-type="Level{{forloop.counter}}"><h1> {{key}}</h1></a></li>
+
+                    {% endfor %}
+                </ul>
+                {% for key,value in scenario.items %}
+                <div id="Level{{forloop.counter}}" class='tabcontent' style="display:block;">
+                  <h1>{{ key }}</h1>
+                 {% for rec in value %}
+                    <article class='MatchCard'>
+                        <section>
+                            <h5>{{ rec.query }}</h5>
+                            <div class="col-32">
+                                <svg id="chart{{key.id}}_{{ forloop.counter }}" class="chart"></svg>
+                            </div>
+                             {% if rec.trials.total %}
+                            <script>
+                                var rest{{key.id}}_{{ forloop.counter }} = {{ rec.trials.total | length }}-{{ rec.trials.finished | length}}
+                                var obj{{key.id}}_{{ forloop.counter }} = d3.select("#chart{{key.id}}_{{ forloop.counter }}");
+                                var data{{key.id}}_{{ forloop.counter }} = {"eligibility":{{ rec.trials.eligible | length }},"non-eligibility":{{ rec.trials.noneligible | length }},'unfinished':rest{{key.id}}_{{ forloop.counter }}};
+                                drawBar(obj{{key.id}}_{{ forloop.counter }},data{{key.id}}_{{ forloop.counter }});
+
+                            </script>
+                            {% endif %}
+                        </section>
+                        <aside>
+
+                            <h3>
+
+                             Total Result <span style="color:black;"> {{ rec.trials.total | length }} </span>
+                             Finished <span style="color:black;"> {{ rec.trials.finished| length}} </span>
+                             Eligible <span style="color:black;">  {{ rec.trials.eligible | length }} </span></br>
+                             Non Eligible <span style="color:black;"> {{ rec.trials.noneligible | length }} </span>
+                            </h3>
+
+                        </aside>
+                    </article>
+                {% endfor %}
+                </div>
+               {% endfor %}
+
+            </div>
+            <script>
+
+                collapsed();
+                $(".Result").css('display', 'block');
+
+                showTab('Level1', $('[data-level-type="Level1"]'));
+                $('.Leveltab li a').on('click', function(evt) {
+
+                    evt.stopPropagation();
+                    var level = $(this).data('level-type');
+                    showTab(level, evt);
+
+
+
+
+                });
+
+            </script>
+
+</div>
+
+{% endblock %}

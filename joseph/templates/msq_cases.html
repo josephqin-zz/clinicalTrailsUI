@@ -1,0 +1,56 @@
+{% extends "base_msp.html" %}
+{% load trialparser %}
+{% block title %}Cases List{% endblock %}
+{% block content %}
+
+{% if obj %}
+
+<table id="dataTable" class="hover" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+
+        <th>Clinical Trial</th>
+        <th>Misspelling Gene</th>
+
+    </tr>
+    </thead>
+    <tfoot>
+    <tr>
+
+        <th>Clinical Trial</th>
+        <th>Misspelling Gene</th>
+
+    </tr>
+    </tfoot>
+
+    <tbody>
+    {% for b in obj %}
+    <tr>
+
+        <td><a href="./{{ b.id }}/">{{ b.file_num | ct_num }}</a></td>
+        <td>{{ b.word }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+
+<div id="search" class="section">
+    <h3>Gene</h3>
+    <h4>{{ word.word }}</h4>
+    <h4><SPAN class="amp">Should Be</SPAN></h4>
+    <h4>{{ gene.gene }}</h4>
+</div>
+
+
+{% endblock %}
+
+{% block script  %}
+$(document).ready(function () {
+$('#dataTable').dataTable();
+});
+{% endblock %}

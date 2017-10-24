@@ -1,0 +1,68 @@
+{% extends 'validation/base_validation.html'%}
+
+
+{% block sub_content %}
+<script>
+             var div = d3.select("body").append("div").attr("class", "toolTip");
+</script>
+
+<div class="wrapper">
+
+        {% for key,value in rs.items %}
+        <div class="row box">
+        <div class="col-20">
+         <h3>Query:
+         <span style="color:black;">
+             {{ key }}
+         </span></h3>
+         <h6>
+
+         </h6>
+             <h6>
+
+                 Total Result <span style="color:black;"> {{ value.total | length }} </span>
+                 Finished <span style="color:black;"> {{ value.finished| length}} </span>
+                 Eligible <span style="color:black;">  {{ value.eligible | length }} </span>
+                 Non Eligible <span style="color:black;"> {{ value.noneligible | length }} </span>
+            </h6>
+        </div>
+        <div class="col-32">
+            <svg id="chart{{ forloop.counter }}" class="chart"></svg>
+        </div>
+        <div class="col-32">
+            <div class="row">
+                <div class="col-15">
+                <h5>Finished</h5>
+                {% for a in value.finished %}
+                    <h6><a href="/validation/trial/{{a.trial.id}}" >{{ a.trial.nct }}</a></h6>
+                {% endfor %}
+                </div>
+                <div class="col-15">
+                    <h5>UnFinished</h5>
+                {% for t in value.unfinished %}
+                    <h6><a href="/validation/trial/{{t.id}}" >{{ t.nct }}</a></h6>
+                {% endfor %}
+                </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        {% if value.total %}
+        <script>
+
+            var obj{{ forloop.counter }} = d3.select("#chart{{ forloop.counter }}");
+            var data{{ forloop.counter }} = {"eligibility":{{ value.eligible | length }},"non-eligibility":{{ value.noneligible | length }},'unfinished':{{ value.unfinished | length }} };
+            drawBar(obj{{ forloop.counter }},data{{ forloop.counter }});
+
+        </script>
+        {% endif %}
+        {% endfor %}
+
+</div>
+
+{% endblock %}
+
+
+

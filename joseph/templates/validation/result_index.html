@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block head %}
+<script src="{% static 'js/dist/Chart.bundle.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+
+{% for b in obj %}
+<h3>
+    <div class="col">
+        <h4><span class="by">  Disease </span> {{ b.disease }} |
+            {% if b.gene %}
+            <span class="by">  Gene </span> {{ b.gene }} |
+            {% endif %}
+            {% if b.age %}
+            <span class="by">  Age </span> {{ b.age }} |
+            {% endif %}
+            {% if b.gender %}
+            <span class="by">  Gender </span> {{ b.gender }} |
+            {% endif %}
+            {% if b.stage %}
+            {{ b.stage }} |
+            {% endif %}
+            {% if b.grade %}
+            {{ b.grade }} |
+            {% endif %}
+            </br>
+            <span class="by">  Total Result </span> {{ b.resultNUM }} |
+            <span class="by">  Finished </span> {{ b.finishedNUM }} |
+            <span class="by">  eligible  </span> {{ b.positive }} |
+            <span class="by">  not eligible </span> {{ b.negtive }} |
+        </h4>
+    </div>
+    <div class="col">
+        <canvas id="doughnut-{{ forloop.counter }}" height="200" width="800"></canvas>
+        <canvas id="bar-{{ forloop.counter }}" height="200" width="800"></canvas>
+    </div>
+    <script>
+      var ctx_{{ forloop.counter }} = document.getElementById("doughnut-{{ forloop.counter }}");
+      var doughnutdata_{{ forloop.counter }} = {
+        labels: [
+            "rest",
+            "eligible",
+            "non-eligible"
+        ],
+        datasets: [
+            {
+                data: [{{ b.resultNUM }}-{{ b.finishedNUM }}, {{ b.positive }}, {{ b.negtive }}],
+                backgroundColor: [
+                    "#68dff0",
+                    "#36A2EB",
+                    "#800000"
+                ],
+                hoverBackgroundColor: [
+                    "#FF6384",
+                    "#4d9900",
+                    "#FFCE56"
+                ]
+            }]
+    };
+    var myDoughnutChart_{{ forloop.counter }} = new Chart(ctx_{{ forloop.counter }}, {
+    type: 'doughnut',
+    data: doughnutdata_{{ forloop.counter }},
+   });
+
+   var bar_{{ forloop.counter }} = document.getElementById("bar-{{ forloop.counter }}");
+   var BarChart_{{ forloop.counter }} = new Chart(bar_{{ forloop.counter }}, {
+            type: 'bar',
+            data: {
+                labels: [
+                {% for s in b.section %}
+                "{{ s.section }}",
+                {% endfor %}
+                ],
+                datasets: [{
+                    label: "Number",
+                    backgroundColor: "rgba(255, 102, 153,0.75)",
+                    borderColor: "rgba(255,99,132,1)",
+                    pointBackgroundColor: "rgba(255,99,132,1)",
+                    pointBorderColor: "#fff",
+                    pointHoverBackgroundColor: "#fff",
+                    pointHoverBorderColor: "rgba(255,99,132,1)",
+                    data: [
+                    {% for s in b.section %}
+                    {{ s.num }},
+                    {% endfor %}
+                    ],
+
+                }]
+            },
+            options: {
+                legend:{
+                display:false
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+    }
+
+        });
+
+
+
+
+
+    </script>
+</h3>
+{% endfor %}
+
+<h3>
+    <div class="col">
+        <h4><span class="by">
+            <span class="by">  Total Result </span> {{ trials.sum }} |
+            <span class="by">  Finished </span> {{ answers }} |
+            <span class="by">  eligible  </span> {{ eligibility }} |
+            <span class="by">  not eligible </span> {{ un_eligibility }} |
+        </h4>
+    </div>
+    <div class="col">
+        <canvas id="doughnut-summary" height="200" width="800"></canvas>
+        <canvas id="bar-summary" height="200" width="800"></canvas>
+    </div>
+    <script>
+      var ctx_summary = document.getElementById("doughnut-summary");
+
+      var doughnutdata_summary = {
+        labels: [
+            "rest",
+            "eligible",
+            "non-eligible"
+        ],
+        datasets: [
+            {
+                data: [({{ trials.sum }}-{{ answers }}), {{ eligibility }}, {{ un_eligibility }}],
+                backgroundColor: [
+                    "#68dff0",
+                    "#36A2EB",
+                    "#800000"
+                ],
+                hoverBackgroundColor: [
+                    "#FF6384",
+                    "#4d9900",
+                    "#FFCE56"
+                ]
+            }]
+    };
+    var myDoughnutChart_summary = new Chart(ctx_summary, {
+    type: 'doughnut',
+    data: doughnutdata_summary,
+   });
+
+   var bar_summary = document.getElementById("bar-summary");
+   var BarChart_summarty = new Chart(bar_summary, {
+            type: 'bar',
+            data: {
+                labels: [
+                {% for s in sections %}
+                "{{ s.section__section }}",
+                {% endfor %}
+                ],
+                datasets: [{
+                    label: "Number",
+                    backgroundColor: "rgba(255, 102, 153,0.75)",
+                    borderColor: "rgba(255,99,132,1)",
+                    pointBackgroundColor: "rgba(255,99,132,1)",
+                    pointBorderColor: "#fff",
+                    pointHoverBackgroundColor: "#fff",
+                    pointHoverBorderColor: "rgba(255,99,132,1)",
+                    data: [
+                    {% for s in sections %}
+                    {{ s.num }},
+                    {% endfor %}
+                    ],
+
+                }]
+            },
+            options: {
+                legend:{
+                display:false
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+    }
+
+        });
+
+
+
+
+
+    </script>
+</h3>
+
+
+{% endblock %}

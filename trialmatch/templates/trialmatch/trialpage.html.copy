@@ -1,0 +1,56 @@
+{% load staticfiles %}
+<html>
+    <head>
+    
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/bootstrap-theme.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+        <title>Trial Match</title>
+		<div class="page-header">
+		
+			<h1>Clinical Trial Matching</a></h1>
+		</div>
+		
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script>
+  function initialize() {
+	var mapCanvas = document.getElementById('map');
+	var mapOptions = {
+	  center: new google.maps.LatLng(41.0852969, -73.8097434),
+	  zoom: 15,
+	  mapTypeId: google.maps.MapTypeId.ROADMAP
+	}
+	var map = new google.maps.Map(mapCanvas, mapOptions)
+  }
+  
+  google.maps.event.addDomListener(window, 'load', initialize);
+</script>	
+</head>
+	
+<body>
+<div class="container-fluid" >
+<div  id="map" style=" float:left; width:45%; margin-left:1%;"></div>
+<div class="list-group-item" style="background-color:lavender;  width:50%; margin-left: 1%; margin-right:1%;margin-bottom:1%;  margin-top:1%; float:right;" >
+
+<p>
+<b>NCT ID:  </b><a target="_blank" href="https://clinicaltrials.gov/ct2/show/{{ rec.id }}"> {{ rec.id }} </a>
+<p><b>Title:  </b>
+{% if rec.source.official_title %}
+{{ rec.source.official_title }}
+{% else %}
+{{ rec.source.brief_title }}
+{% endif %}
+</p>
+<p><b>Purpose:  </b>{{rec.source.Purpose}}</p>
+<p><b>Description:  </b>{{rec.source.description}}</p>
+<p><b>Maximum Age: </b>{{rec.source.maximumAge}} years</p>
+<p><b>Minimum Age: </b>{{rec.source.minimumAge}} years</p>
+<p><b>Inclusion Criteria: </b>{{rec.source.IC}}</p>
+<p><b>Exclusion Criteria: </b>{{rec.source.EC}}</p>
+<p><b>Gender: </b>{{rec.source.gender}}</p>
+</p>
+</div>
+</div>
+</body>
+</html>

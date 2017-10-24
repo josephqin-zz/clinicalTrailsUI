@@ -1,0 +1,54 @@
+{% extends 'validation/base_validation.html'%}
+
+
+{% block sub_content %}
+<script>
+             var div = d3.select("body").append("div").attr("class", "toolTip");
+</script>
+
+<div class="wrapper">
+        <div class="col-23 box">
+            
+          <h6>Query List</h6>  
+        </div>
+        {% for b in obj %}
+        <div class="col-23" >
+        <div class="row box" style="box-shadow: -3px 3px 15px #888888;">
+        <div class="col-7">
+        <h5><span class="by">  Disease </span>  {{ b.disease }} </br>
+                                                {% if b.gene %}
+                                                <span class="by">  Gene </span>  {{ b.gene }} </br>
+                                                {% endif %}
+                                                {% if b.age %}
+                                                <span class="by">  Age </span>  {{ b.age }} </br>
+                                                {% endif %}
+                                                {% if b.gender %}
+                                                <span class="by">  Gender </span>  {{ b.gender }} </br>
+                                                {% endif %}
+                                                {% if b.stage %}
+                                                {{ b.stage }} </br>
+                                                {% endif %}
+                                                {% if b.grade %}
+                                                {{ b.grade }} </br>
+                                                {% endif %}
+                                                </h5>
+        </div>
+        <div class="col-20">
+            <svg id="chart{{ forloop.counter }}" class="chart"></svg>
+        </div>
+
+        </div>
+        </div>
+        <script>
+            var rest{{ forloop.counter }} = {{ b.resultNUM }}-{{ b.finishedNUM }}
+            var obj{{ forloop.counter }} = d3.select("#chart{{ forloop.counter }}");
+            var data{{ forloop.counter }} = {"eligibility":{{ b.positive }},"non-eligibility":{{ b.negtive }},'unfinished':rest{{ forloop.counter }}};
+            drawBar(obj{{ forloop.counter }},data{{ forloop.counter }});
+
+        </script>
+
+        {% endfor %}
+
+</div>
+
+{% endblock %}

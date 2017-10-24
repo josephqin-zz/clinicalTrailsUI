@@ -1,0 +1,112 @@
+    {% extends "base_validation.html" %}
+    {% load staticfiles %}
+    {% block head %}
+    <script src="{% static 'js/dist/Chart.bundle.js' %}"></script>
+    {% endblock %}
+
+    {% block sub_content %}
+
+
+    <section id="section-works" class="section appear clearfix">
+                <div class="container">
+                    
+                    <div class="row mar-bot40">
+                        <div class="col-md-offset-3 col-md-6">
+                            <div class="section-header">
+                                <h2 class="section-heading animated" data-animation="bounceInUp">Databases</h2>
+
+                            </div>
+                        </div>
+                    </div>
+                        
+                            <div class="row">
+                              
+                              <div class="col-md-12">
+                                <div class="row">
+                                  <div class="portfolio-items isotopeWrapper clearfix" id="3">
+                                  {% for i in indices %}
+                                    <article class="col-md-4 isotopeItem webdesign">
+                                        <div class="portfolio-item">
+
+                                        <h4><span class="by">  Version:  </span> {{ i.index.index_name }} </br>
+                                        <span class="by">  Updated on: </span> {{ i.index.update_date}}
+            </h4>
+            <h5>
+                <span class="by">  {% if i.index.disease_hier %} With {% else %} Without {% endif %}</span> Disease Ontology </br>
+                <span class="by">  Total Result </span> {{ i.trial_num.sum }} </br>
+                <span class="by">  Finished </span> {{ i.result_num }} </br>
+                <span class="by">  eligible  </span> {{ i.eligibility_num }} </br>
+                <span class="by">  not eligible </span> {{ i.un_eligibility_num }} </br>
+            </h5>
+                                            <h5><a href="./{{ i.index.id }}">Details...</a></h5>
+             <canvas id="doughnut-summary_{{ forloop.counter }}" height="400" width="500"></canvas>
+             {% if i.sections %}
+             <table class="table table-striped">
+             <thead>
+                 <tr>
+                     <td>section</td>
+                     <td>number</td>
+                 </tr>
+             </thead>
+             <tbody>
+             {% for s in i.sections %}
+                    <tr>
+                        <td>{{ s.section__section }}</td>
+                        <td>{{ s.num }}</td>
+                    </tr>
+             {% endfor %}
+             </tbody>
+             </table>                               
+             {% endif %}                                       
+                                                    
+            </div>
+
+    <script>
+          var ctx_summary_{{ forloop.counter }} = document.getElementById("doughnut-summary_{{ forloop.counter }}");
+
+          var doughnutdata_summary_{{ forloop.counter }} = {
+            labels: [
+                "rest",
+                "eligible",
+                "non-eligible"
+            ],
+            datasets: [
+                {
+                    data: [({{ i.trial_num.sum }}-{{ i.result_num }}), {{ i.eligibility_num }}, {{ i.un_eligibility_num }}],
+                    backgroundColor: [
+                        "#68dff0",
+                        "#36A2EB",
+                        "#800000"
+                    ],
+                    hoverBackgroundColor: [
+                        "#FF6384",
+                        "#4d9900",
+                        "#FFCE56"
+                    ]
+                }]
+        };
+        var myDoughnutChart_summary_{{ forloop.counter }} = new Chart(ctx_summary_{{ forloop.counter }}, {
+        type: 'doughnut',
+        data: doughnutdata_summary_{{ forloop.counter }},
+       });
+
+       
+        </script>
+
+                                    </article>
+                                    {% endfor %}
+                                    
+                                    </div>
+                                            
+                                </div>
+                                         
+
+                                </div>
+                            </div>
+                    
+                </div>
+            </section>
+
+
+
+    {% endblock %}

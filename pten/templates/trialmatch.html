@@ -1,0 +1,381 @@
+{% extends 'trialmatch/base_trialmatch.html'%}
+{% load trialparser %}
+{% block sub_content %}
+<div class='Requestwrapper' id="Match">
+
+            <div class="center clearfix selectedfilters">
+
+            </div>
+            <form class="RequestForm center clearfix allfilters" action="" method="post">
+                <div class='row summary middle clearfix'>
+                    <h2>Clinical Trial Match Request</h2>
+                    <div class='right clearfix'>
+                        <input class="noselect Submit freeze" type="submit" value="Submit"/>
+                    </div>
+                </div>
+                <div class='inputs'>
+                    {% for field in query_form %}
+                    <div class="inputContainer">
+                        <div class="adjust">
+                            <label for="id_{{ field.name }}">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% for field in option_form %}
+                    <div class="inputContainer">
+                        <div class="adjust">
+                            <label for="id_{{ field.name }}">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="inputContainer">
+                <div class="adjust">
+                {% csrf_token %}
+                </div>
+                </div>
+                </div>
+            </form>
+        </div>
+        <script type="text/javascript">
+                var remember = [];
+                var transitionEnd = transitionEndEventName();
+                var db = [];
+                var backuphtml;
+                var ContentWidth = 1100;
+                var sassReference = {
+                    'ContentPaddingTop': 32,
+                    'RequestFormBottom': 36,
+                    'lineHeight': 24
+                };
+
+
+                //fake database: db
+                $('.RequestForm .inputs input, .RequestForm .inputs select').each(function(i) {
+                    var item = {};
+                    item['name'] = this.name;
+                    item['index'] = i;
+                    item['selectedValue'] = null;
+                    item['confirmedValue'] = null;
+                    item['type'] = this.type;
+                    item['tagName'] = this.tagName.toLowerCase();
+                    db.push(item);
+                });
+                
+                //record the height
+
+                var RequestHeight = $('.Requestwrapper').outerHeight();
+                var collapsedRequestHeight = sassReference.ContentPaddingTop/2 + sassReference.RequestFormBottom/2 + Math.ceil(db.length / 4) * sassReference.lineHeight;
+                // $('.Requestwrapper').css('transform',function(){return 'translateY('+ RequestHeight +')'})
+                //check whether the form canbe submitted -> whether the submit button is clickable
+                check_btn_state();
+
+                $('.Resultwrapper').css('transform','translateY('+ RequestHeight +'px)');
+                /////////////change the select style/////////////////
+                $('select').on('change', function() {
+                    var selectedVal = this.value;
+                    var selectedText = this.options[this.selectedIndex].text;
+                    var selectedItem;
+                    
+                    for (x in db) {
+                        if (db[x].name == this.name) {
+
+                            selectedItem = db[x];
+                            if (this.selectedIndex > 0) {
+                                db[x].selectedValue = selectedVal;
+                            } else db[x].selectedValue = null;
+                        }
+                    }
+
+                    if (this.selectedIndex > 0) {
+                        if ($(this).hasClass('selectedValue')) return;
+                        else {
+                            $(this).addClass('selectedValue');
+                        }
+                    } else {
+                        if ($(this).hasClass('selectedValue')) {
+                            $(this).removeClass('selectedValue');
+                        } else return;
+                    }
+
+                    check_btn_state();
+
+                });
+
+                $('.Resultwrapper').on('click',function(){
+                  if($('.Requestwrapper').hasClass('collapsed')){
+                    return;
+                  }else if($('.Submit').hasClass('freeze') == false){
+                    collapsed();
+                  }else return;
+                });
+
+                $('input').on('change', function() {
+                    var selectedVal = this.value;
+                    var selectedName = this.name;
+                    var selectedItem;
+                    for (x in db) {
+                        if (db[x].name == selectedName) {
+
+                            selectedItem = db[x];
+                            if (selectedVal == "") {
+                                selectedVal = null;
+                            }
+                            db[x].selectedValue = selectedVal;
+
+                        }
+                    }
+                    
+
+                    check_btn_state();
+                });
+
+                function collapsed(){
+                  var filledArray = [];
+                  
+                  var newForm;
+                  var showAll;
+                  for (x in db) {
+                      if ((db[x].selectedValue !== null)) {
+                          filledArray.push(db[x]);
+                      }
+                      db[x].confirmedValue = db[x].selectedValue;
+                  }
+                  backuphtml = $.extend(true, [], $('.RequestForm .inputs input, .RequestForm .inputs select'));
+
+
+                  $('.Requestwrapper').addClass('collapsed');
+                  $('.Resultwrapper').addClass('collapsed');
+                  //$('.Resultwrapper').css({'transform':'translateY('+ collapsedRequestHeight + 'px)'});
+                  $('.Resultwrapper').css({
+                        'margin-top': (96+collapsedRequestHeight) + 'px'
+                        });
+                  // $('.collapsed.Resultwrapper').css('transform', 'translateY(-204px)');
+                  $('.selectedfilters').one(transitionEnd, function() {
+
+                      $('.Requestwrapper .RequestForm').addClass('visuallyhidden');
+                      $('.Requestwrapper .RequestForm').addClass('hidden');
+
+                  });
+
+                  // $(".Requestwrapper.collapsed").css('max-height',100* Math.ceil(filledArray.length/3));
+                  var SelectedString = "{{ profile | profile_sentence }}";
+                  var ele = document.createElement('h2');
+                   $(ele).text(SelectedString);
+                   $(ele).addClass('shrinked');
+                   $(ele).appendTo($('.selectedfilters'));
+
+
+
+                  $(".Requestwrapper.collapsed form input.shrinked").css('width', Math.min(900 / 4 - 20, (900 / filledArray.length) - 12));
+
+                  showAll = document.createElement('a');
+                  $(showAll).text('Show All');
+                  $(showAll).addClass('showAll');
+                  $(showAll).addClass('clearfix right');
+                  $(showAll).prependTo($('.selectedfilters'));
+
+                };
+                function showTab(level, evt) {
+
+                    var i, tabcontent, tablinks;
+                    tabcontent = document.getElementsByClassName("tabcontent");
+                    for (i = 0; i < tabcontent.length; i++) {
+                        tabcontent[i].style.display = "none";
+                    }
+                    tablinks = document.getElementsByClassName("tablinks");
+                    for (i = 0; i < tablinks.length; i++) {
+                        tablinks[i].className = tablinks[i].className.replace(" active", "");
+                    }
+                    document.getElementById(level).style.display = "block";
+                    if (evt.currentTarget) {
+                        evt.currentTarget.className += " active";
+                    } else {
+                        evt.addClass('active');
+                    }
+
+                };
+
+            ////////////////////submit/////////////////////////////
+                
+
+
+                $('body').on('click', 'a.showAll', function(e) {
+
+                    $('.Requestwrapper').removeClass('collapsed');
+                    $('.Resultwrapper').removeClass('collapsed');
+                    $('.selectedfilters').empty();
+                    $('.Requestwrapper .RequestForm').removeClass('hidden');
+                    setTimeout(function() {
+                        $('.Requestwrapper .RequestForm').removeClass('visuallyhidden');
+                    }, 200);
+
+                    $('.Resultwrapper').css({'transform':'translateY('+ RequestHeight + 'px)'});
+
+                });
+
+                function check_btn_state() {
+                    var ele = $('.Submit');
+                    var freeze = ele.hasClass('freeze');
+                    var selected = false;
+                    for (x in db) {
+                        if (db[x].selectedValue) {
+                            if (db[x].selectedValue.length > 0) {
+                                selected = true;
+                            }
+                        }
+                    }
+                    if ((freeze == true) && (selected == true)) {
+                        ele.removeClass('freeze');
+                    } else if ((freeze == false) && (selected == false)) {
+                        ele.addClass('freeze');
+                    }
+                }
+
+                function transitionEndEventName() {
+                    var i,
+                        undefined,
+                        el = document.createElement('div'),
+                        transitions = {
+                            'transition': 'transitionend',
+                            'OTransition': 'otransitionend', // oTransitionEnd in very old Opera
+                            'MozTransition': 'transitionend',
+                            'WebkitTransition': 'webkitTransitionEnd'
+                        };
+
+                    for (i in transitions) {
+                        if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
+                            return transitions[i];
+                        }
+                    }
+                }
+
+
+
+
+        </script>
+
+        {% if ctlist %}
+        
+        <div class="Resultwrapper">
+        {% if hier %}
+            <div class='Result center'>
+                <ul class="Leveltab">
+                    {% for ct in ctlist %}
+
+                    <li><a href="#" class="tablinks" data-level-type="Level{{ct.level}}"><h1>Level {{ct.level}}</h1></a></li>
+
+                    {% endfor %}
+                </ul>
+                {% for ct in ctlist %}
+                <div id="Level{{ct.level}}" class='tabcontent' style="display:block;">
+                  <h1>{{ ct.total_hits }} Matched Clinical Trial Results</h1>
+                 {% for rec in ct.hits %} 
+                    <article class='MatchCard'>
+                        <section>
+                            <div class='Title'>
+                                <h6>Title</h6>
+                                <h2>{% if rec.context.official_title %}
+                                    {{ rec.context.official_title }}
+                                    {% else %}
+                                    {{ rec.context.brief_title }}
+                                    {% endif %}</h2>
+                            </div>
+                            <div class='Purpose'>
+                                <h6>Purpose</h6>
+                                <h5>{{rec.context.Purpose}}</h5>
+                                <h5 class="more">more...</h5>
+                            </div>
+                        </section>
+                        <aside>
+                            <h6>NCT ID</h6>
+                            <h3><a href="https://clinicaltrials.gov/ct2/show/{{ rec.id }}">{{ rec.id }}</a></h3>
+                            <h6>Level {{ct.level}} Disease</h6>
+                            <h3>
+                            {{ ct.diseases | dis_annotation }}
+
+                            </h3>
+                            {% if rec.aas %}
+                            <h6>AAS</h6>
+                            <h3>{{ rec.aas }}</h3>
+                            {% endif %}
+                        </aside>
+                    </article>
+                {% endfor %}
+                </div>
+               {% endfor %}
+               
+            </div>
+            <script>
+                
+                collapsed();
+                $(".Result").css('display', 'block');
+                showTab('Level1', $('[data-level-type="Level1"]'));
+                $('.Leveltab li a').on('click', function(evt) {
+
+                    evt.stopPropagation();
+                    var level = $(this).data('level-type');
+                    showTab(level, evt);
+
+
+
+
+                });
+   
+            </script>
+        {% else %}
+        
+            <div class='Result center'>
+
+                <div id="Level" class='tabcontent' style="display:block;">
+
+                    <h1>{{ total }} Matched Clinical Trial Results</h1>
+                    {% for rec in ctlist %}
+                    <article class='MatchCard'>
+                        <section>
+                            <div class='Title'>
+                                <h6>Title</h6>
+                                <h2>{% if rec.context.official_title %}
+                                    {{ rec.context.official_title }}
+                                    {% else %}
+                                    {{ rec.context.brief_title }}
+                                    {% endif %}</h2>
+                            </div>
+                            <div class='Purpose'>
+                                <h6>Purpose</h6>
+                                <h5>{{rec.context.Purpose}}</h5>
+                                        <h5 class="more">more...</h5>
+                            </div>
+                        </section>
+                        <aside>
+                            <h6>NCT ID</h6>
+                            <h3><a href="https://clinicaltrials.gov/ct2/show/{{ rec.id }}">{{ rec.id }}</a></h3>
+                        </aside>
+                    </article>
+                    {% endfor %}
+                </div>
+
+            </div>
+            <script>
+                
+                collapsed();
+                $(".Result").css('display', 'block');
+   
+        </script>
+        {% endif %}
+        </div>
+
+        {% endif %}
+
+
+      
+
+{% endblock %}
+
+{% block script %}
+
+
+
+{% endblock %}

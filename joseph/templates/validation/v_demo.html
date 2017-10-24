@@ -1,0 +1,160 @@
+{% extends "base_validation.html" %}
+{% load trialparser %}
+
+
+
+{% block sub_content %}
+
+<section id="section-works" class="section appear clearfix">
+    <div class="container">
+
+        <div class="row mar-bot40">
+            <div class="col-md-offset-3 col-md-6">
+                <div class="section-header">
+                    <h2 class="section-heading animated" data-animation="bounceInUp">Answer</h2>
+                    <p>Demo the validation result</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <nav id="filter" class="col-md-12 text-center">
+                <ul>
+                    <li><a href="#" class="current btn-theme btn-small" data-filter="*">All</a></li>
+                    <li><a href="#"  class="btn-theme btn-small" data-filter=".Eligibility" >Eligibility</a></li>
+                    <li><a href="#"  class="btn-theme btn-small" data-filter=".unEligibility">UnEligibility</a></li>
+
+                </ul>
+            </nav>
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="portfolio-items isotopeWrapper clearfix" id="3">
+
+                        {% for rec in records %}
+                        <article class="col-md-4 isotopeItem {% if rec.answer.eligibility %}Eligibility{% else %}unEligibility{% endif %}">
+                            <div class="portfolio-item">
+                                <div class="portfolio-item txt">
+                                    <h5>{{ rec.id }}</h5>
+                                </div>
+                                <div class="portfolio-desc align-center">
+                                    <div class="folio-info">
+                                        <h5><a target="_blank" href="https://clinicaltrials.gov/ct2/show/{{ rec.id }}">{{ rec.id }}</a></h5>
+                                        <a href="#popup{{ forloop.counter }}" class="fancybox"><i class="fa fa-plus fa-2x"></i></a>
+                                    </div>
+                                    <div id="popup{{ forloop.counter }}" class="portfolio-item overlay">
+                                        
+
+
+                                        <div class="content">
+                                            <div class="col">
+                                                <div class="col-md-9">
+                                                    <p><b>NCT ID:  </b><a target="_blank" href="https://clinicaltrials.gov/ct2/show/{{ rec.id }}"> {{ rec.id }} </a></p>
+                                                    <p><b>Title:  </b>
+                                                        {% if rec.source.official_title %}
+                                                        {{ rec.source.official_title }}
+                                                        {% else %}
+                                                        {{ rec.source.brief_title }}
+                                                        {% endif %}
+                                                    </p>
+                                                    <p><b>Purpose:  </b>{{rec.source.Purpose}}</p>
+                                                    <p><b>Description:  </b>{{rec.source.description}}</p>
+                                                    <p><b>Maximum Age: </b>{{rec.source.maximumAge | years}} years</p>
+                                                    <p><b>Minimum Age: </b>{{rec.source.minimumAge | years}} years</p>
+                                                    <p><b>Inclusion Criteria: </b>{{rec.source |InclusionCriteria}}</p>
+                                                    <p><b>Exclusion Criteria: </b>{{rec.source |ExclusionCriteria}}</p>
+                                                    <p><b>Gender: </b>{{rec.source.gender}}</p>
+                                                    <p><b>Conditions:</b><p>
+                                                    {% for con in rec.source.Conditions %}
+                                                    {{ con }}</br>
+                                                    {% endfor %}
+                                                </p>
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div id="profile">
+                                                        <h3>Profile</h3>
+                                                        <h5> <span class="by"> disease</span> </br>{{ disease }}</h5>
+                                                        {% if gene %}
+                                                        <h5> <span class="by"> gene</span></br> {{ gene }} </h5>
+
+                                                        <h5>  <span class="by"> gene synonyms</span></br>
+                                                            {% for s in syns %}
+                                                            {{ s }},
+                                                            {% endfor %}
+                                                        </h5>
+                                                        {% endif %}
+                                                        {% if gender %}
+                                                        <h5> <span class="by"> gender</span></br> {{ gender }}</h5>
+                                                        {% endif %}
+                                                        {% if age %}
+                                                        <h5> <span class="by"> age</span></br> {{ age }}</h5>
+                                                        {% endif %}
+                                                        {% if stage %}
+                                                        <h5>   {{ stage }}</h5>
+                                                        {% endif %}
+                                                        {% if grade %}
+                                                        <h5>   {{ grade }} </h5>
+                                                        {% endif %}
+
+                                                    </div>
+                                                    <div id="search-{{ forloop.counter }}" >
+                                                        
+
+                                                        <h3>{{ subtitle }}</h3>
+
+                     <h5>{{ rec.answer.author }} <span class="by">thinks</span > </h5>
+                     <h5><span class="by">This Trial is </span> {{ rec.answer.eligibility | eligibility }}</h5>
+                     <h5> The Sections List</h5>
+
+                    {% for section in rec.answer.section.all %}
+                    <li>{{ section }}</li>
+                    {% endfor %}
+
+                     <h5> Sentences :</h5>
+                     <p>{{ rec.answer.sentence }}</p>
+
+                                                    </div>
+                                                   
+
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+
+
+
+
+
+
+
+
+
+
+                                </div>
+                            </div>
+                         </div>
+                        </article>
+
+                        {% endfor %}
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+
+
+
+
+
+
+{% endblock %}
+
+

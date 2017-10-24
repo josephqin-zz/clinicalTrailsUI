@@ -1,0 +1,70 @@
+{% extends "base_msp.html" %}
+{% load trialparser %}
+{% block title %}<span class="by">NCT ID:  </span><a target="_blank"
+                                                     href="https://clinicaltrials.gov/ct2/show/{{ rec.id }}"> {{ rec.id  }} </a>{% endblock %}
+{% block content %}
+
+
+<p><b>Title: </b>
+    {% if rec.source.official_title %}
+    {{ rec.source.official_title }}
+    {% else %}
+    {{ rec.source.brief_title }}
+    {% endif %}
+</p>
+<p><b>Purpose:  </b>{{rec.source.Purpose}}</p>
+<p><b>Description:  </b>{{rec.source.description}}</p>
+<p><b>Maximum Age: </b>{{rec.source.maximumAge}} years</p>
+<p><b>Minimum Age: </b>{{rec.source.minimumAge}} years</p>
+<p><b>Inclusion Criteria: </b>{{rec.source.IC}}</p>
+<p><b>Exclusion Criteria: </b>{{rec.source.EC}}</p>
+<p><b>Gender: </b>{{rec.source.gender}}</p>
+
+
+{% endblock %}
+
+{% block sidebar %}
+
+<div id="info" class="section">
+    <h3>Gene</h3>
+    <h4>{{ word.word }}</h4>
+    <h4><SPAN class="amp">Should Be</SPAN></h4>
+    <h4>{{ gene.gene }}</h4>
+</div>
+
+<div id="msg" class="section">
+
+    <h5>{{ msg }}</h5>
+
+</div>
+
+
+{% if form %}
+<div id="search" class="section">
+    <h3> Please Answer</h3>
+    <form action="" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+    </form>
+</div>
+{% endif %}
+{% endblock %}
+
+
+{% block script  %}
+
+
+var instance = new Mark(document.querySelector("#content"));
+var options = {
+"accuracy": {
+"value": "complementary",
+"limiters": [",", "."]
+}
+};
+
+var keyword = "{{ word.word }}"
+instance.mark(keyword,options);
+
+
+{% endblock %}

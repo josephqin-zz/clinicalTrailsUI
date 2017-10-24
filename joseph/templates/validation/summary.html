@@ -1,0 +1,51 @@
+{% extends 'validation/base_validation.html'%}
+
+
+{% block sub_content %}
+<script>
+             var div = d3.select("body").append("div").attr("class", "toolTip");
+</script>
+
+<div class="wrapper">
+
+        {% for i in indices %}
+        <div class="row box">
+        <div class="col-20">
+         <h3>Index:
+         <span style="color:black;"><a href="./{{ i.index.id }}">
+             {{ i.index.index_name }}</a>
+         </span></h3>
+         <h6>
+         Updated By
+         <span style="color:black;">
+             {{ i.index.update_date}}
+         </span>
+         </h6>
+             <h6>
+                 <span style="color:black;">{% if i.index.disease_hier %} With {% else %} Without {% endif %}  Disease Ontology </span> </br>
+                 Total Result <span style="color:black;"> {{ i.trial_num.sum }} </span>
+                 Finished <span style="color:black;"> {{ i.result_num }} </span>
+                 Eligible <span style="color:black;">  {{ i.eligibility_num }} </span>
+                 Non Eligible <span style="color:black;"> {{ i.un_eligibility_num }} </span>
+            </h6>
+        </div>
+        <div class="col-32">
+            <svg id="chart{{ forloop.counter }}" class="chart"></svg>
+        </div>
+
+        </div>
+        <script>
+            var rest{{ forloop.counter }} = {{ i.trial_num.sum }}-{{ i.result_num }}
+            var obj{{ forloop.counter }} = d3.select("#chart{{ forloop.counter }}");
+            var data{{ forloop.counter }} = {"eligibility":{{ i.eligibility_num }},"non-eligibility":{{ i.un_eligibility_num }},'unfinished':rest{{ forloop.counter }}};
+            drawBar(obj{{ forloop.counter }},data{{ forloop.counter }});
+
+        </script>
+        {% endfor %}
+
+</div>
+
+{% endblock %}
+
+
+

@@ -1,0 +1,145 @@
+    {% extends "base_new.html" %}
+    {% load staticfiles %}
+    {% block head %}
+    <script src="http://d3js.org/d3.v3.js"></script>
+    <script>
+
+         function drawBar(obj,sections){
+
+    var section = d3.keys(sections);
+    console.log(section);
+    var data = d3.values(sections);
+
+	  var colors = ['#056305','#ea1a07','#d0e5e8']
+
+
+//data.sort(d3.descending());
+
+	var width = "100%",
+	    height = 30,
+		goal = 600,
+		perc_so_far = 0;
+
+	//console.log(d3.sum(data));
+	var total_time = d3.sum(data);
+	var bar_x = 0;
+	var chart = obj
+		.attr("width", "100%")
+		.attr("height", height);
+		bar_x = 0;
+		//var chart_width = chart.style("width").replace("px", "");
+	var chart_width = parseInt(chart.style("width"));
+	console.log(chart_width);
+
+
+	var bar = chart.selectAll("g")
+		.data(data)
+		.enter().append("g");
+		console.log(bar);
+	bar.append("rect")
+		.attr("width", function(d) { return ((d/total_time)*100) + "%"; } )
+		.attr("x", function(d) {
+			var prev_perc = perc_so_far;
+			var this_perc = 100*(d/total_time);
+			perc_so_far = perc_so_far + this_perc;
+
+			return prev_perc + "%";
+		})
+		.attr("height", height)
+		.attr("fill",  function(d,i) { return colors[i] } );
+
+	perc_so_far = 0;
+	bar.append("text")
+
+		//.attr("y", 11)
+
+		.attr("x", function(d) {
+			var prev_perc = perc_so_far;
+			var this_perc = 100*(d/total_time);
+			perc_so_far = perc_so_far + this_perc;
+
+			return prev_perc + (this_perc/2) + "%";
+		})
+		.attr("dy", "1.15em")
+		.text(function(d) { return d==0 ? null : (100*(d/total_time)).toFixed(0) + "%"; });
+
+	   bar
+	            .on("mousemove", function(d,i){
+	                div.style("left", d3.event.pageX+10+"px");
+	                div.style("top", d3.event.pageY-25+"px");
+	                div.style("display", "inline-block");
+	                div.html((section[i]) + " : " + d);
+	            });
+	    bar
+	            .on("mouseout", function(d){
+	                div.style("display", "none");
+	            });
+
+
+	d3.select(window).on('resize', resize);
+
+	};
+
+
+	function resize () {
+		var width = parseInt(d3.select("#chart").style("width"));
+		//console.log(width);
+		//console.log(bar);
+	}
+
+    </script>
+    <style>
+    .box{
+
+    margin:10px 10px 10px 10px;
+
+
+
+    }
+    .toolTip {
+
+            position: absolute;
+            display: none;
+            width: auto;
+            height: auto;
+            background: none repeat scroll 0 0 white;
+            border: 0 none;
+            border-radius: 8px 8px 8px 8px;
+            box-shadow: -3px 3px 15px #888888;
+            color: black;
+            font: 15px ;
+            padding: 5px;
+            text-align: center;
+        }
+
+      .chart rect {
+      /*  fill: steelblue;*/
+      }
+
+      .chart text {
+        fill: white;
+        font: 14px ;
+        text-anchor: middle;
+      }
+      .chart {
+
+        background-color: #fff;
+      }
+    </style>
+    {% endblock %}
+
+    {% block content %}
+
+
+                
+
+
+                 
+    
+
+
+    {% block sub_content %}{% endblock %}
+
+
+
+    {% endblock %}

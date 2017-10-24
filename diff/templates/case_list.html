@@ -1,0 +1,83 @@
+{% extends "base_new.html" %}
+{% block head %}
+
+    <style>
+    .after_hl{
+    color:red;
+    position:absolute;
+    background:none;
+    display:inline-block;
+    line-height:2;
+    margin:-15px 0px 0px 0px;
+
+
+    }
+
+     .before_hl{
+    background:#c4ffb3;
+    }
+
+    .context{
+
+    }
+    .box {
+      font-family: monospace;
+      font-size:15px;
+      margin: 20px 20px 20px 20px;
+      background: rgba(255,255,255,0.2);
+      padding: 35px 35px 35px 35px;
+      border: 2px solid #fff;
+      line-height: 2.5;
+
+      background-clip: padding-box;
+
+    }
+
+    </style>
+
+{% endblock %}
+{% block content %}
+
+       <section class="section">
+        <div class="row ">
+            <div id="tool" class="col-md-12">
+               <div class="box">
+                <h1 class="noselect" ><a href="./tool/">
+                            Go to Tool</a></h1>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+        <div id="search" class="col-md-12">
+            <h3>Search</h3>
+            <form id="case_form" action="" method="post"  enctype="multipart/form-data" class="box">
+             {% csrf_token %}
+             {{ form }}
+            <div class="right">
+                        <button class="noselect" type="submit" id="SubmitMatch">
+                            Submit
+                        </button>
+                        <button class="noselect">
+                             Go to Tool
+                        </button>
+
+            </div>
+            </form>
+
+         </div>
+
+         <div class="row ">
+            <div class="col-md-12">
+
+
+                <h3> The Differences</h3>
+                <p class="box">{{ after|safe }}</p>
+            </div>
+
+        </div>
+            </div>
+           </section>
+{% endblock %}
+

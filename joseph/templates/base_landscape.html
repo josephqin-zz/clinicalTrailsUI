@@ -1,0 +1,42 @@
+    {% extends "base.html" %}
+    {% load staticfiles %}
+    {% block head %}
+    <script src="{% static 'js/dist/Chart.bundle.js' %}"></script>
+    {% endblock %}
+
+    {% block content %}
+
+    <section class="featured" style="background:#985E6D">
+                
+                <div class="container">
+                     <div class="row mar-bot40">
+                        <div class="col-md-6 col-md-offset-3">
+                                <div class="align-center">
+                                <i class="fa fa-book fa-5x mar-bot20"></i>
+                                <h2 class="slogan">Landscape</h2>
+                               
+                                <p> {% if index %}
+        <h4 style="color:white"><span style="font-style: italic">Index</span> {{ index.index_name }} <span style="font-style: italic">Updated By</span> {{ index.update_date | date:"M d Y" }}</h4>
+        {% endif %}
+
+                                </p>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                 
+    
+    </section>
+
+    {% block sub_content %}{% endblock %}
+
+<section id="parallax2" class="section parallax" data-stellar-background-ratio="0.5">   
+            <div class="align-center pad-top40 pad-bot40">
+                <blockquote class="bigquote color-white">Indoctum accusamus comprehensam</blockquote>
+                <p class="color-white">Bootstraptaste</p>
+            </div>
+</section>
+
+    {% endblock %}

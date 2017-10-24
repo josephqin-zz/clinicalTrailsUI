@@ -1,0 +1,76 @@
+
+{% load staticfiles %}
+<html>
+<head>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="{% static 'js/bar.js' %}"></script>
+    <link href="{% static 'css/progress_bar.css' %}" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'css/master.css' %}" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="{% static 'css/tabs.css' %}" type="text/css" media="screen" charset="utf-8" />
+    <link rel="stylesheet" href="{% static 'css/grid-1080.css' %}" type="text/css" media="screen" charset="utf-8" />
+
+    <style>
+
+    .hideme
+    {
+        display:none;
+        visibility:hidden;
+    }
+    </style>
+
+
+</head>
+<body>
+
+<div id="wrapper" class="span-12">
+	<div id="pages">
+		<ul>
+			<li><a href="/joseph/">Home</a></li>
+            <li><a href="/joseph/trials/">Trial</a></li>
+            <li><a href="/joseph/landscape/">LandScape</a></li>
+            <li><a href="/validation/">Validation</a></li>
+
+            <li><a href="/joseph/beacon/">Beacon</a></li>
+            <li><a href="/joseph/diff/">Comparison</a></li>
+		</ul>
+	</div>
+
+	<div id="header" class="col last span-12">
+		<h1><span class="amp"> Clinical </span> Trial</h1>
+        {% if index %}
+        <h3><span class="by">Index</span> {{ index.index_name }} <span class="by">Updated By</span> {{ index.update_date | date:"M d Y" }}</h3>
+        {% endif %}
+	</div>
+
+        <div id="content" class="col span-10" >
+		<div class="col last span-10">
+		<h4>{% block title %}{% endblock %}</h4>
+		</div>
+
+
+
+            {% block content %}{% endblock %}
+
+
+        </div>
+
+    <div id="sidebar" class="col last span-2">
+
+		{% block sidebar %}{% endblock %}
+
+	</div>
+
+
+	<div id="footer">
+		<p id="foo"><em>P</em>TEN</p>
+
+		<p>Copyright © 2016 PTEN Philips . All rights reserved.</p>
+	</div>
+
+    </div>
+
+
+<script>{% block script %}{% endblock %}</script>
+
+</body>
+</html>

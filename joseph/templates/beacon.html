@@ -1,0 +1,61 @@
+{% extends "base_beaconsearch.html" %}
+
+{% block title %} Beacon {% endblock %}
+{% block sub_content %}
+<div id="content" class="col span-10" >
+
+
+
+<button id="search_bar" type="button">Search</button>
+</div>
+
+
+
+    <div id="search" class="section">
+    <h3>INPUT</h3>
+    <form action="" method="post"  enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+    </form>
+
+</div>
+
+
+
+
+{% endblock %}
+
+{% block script %}
+
+$('#search_bar').click(function(){
+        $('#search_bar').addClass('hideme');
+        var source = new EventSource("./parse/")
+        var count = 0;
+        source.onmessage = function(event){
+          if(event.data == 'True' || event.data == "False"){
+           var bar = document.getElementById(count)
+           if (event.data == 'True') bar.setAttribute("data-finished", " found ");
+            else bar.setAttribute("data-finished", " not found ");
+           $('#'+count).progressFinish();
+
+          }
+          else{
+
+
+           count += 1;
+          var btn = document.createElement("a");
+          var t = document.createTextNode(event.data);
+          btn.appendChild(t);
+          btn.setAttribute("class", "progress-button");
+          btn.setAttribute("id", count);
+          btn.setAttribute("data-loading", event.data+"   searching");
+
+          document.getElementById("content").appendChild(btn);
+          $('#'+count).progressInitialize();
+          $('#'+count).progressStart();
+
+          }
+        };
+    });
+{% endblock %}

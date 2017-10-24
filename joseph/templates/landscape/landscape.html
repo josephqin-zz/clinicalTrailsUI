@@ -1,0 +1,183 @@
+ {% extends "base_new_test.html" %}
+ {% load staticfiles %}
+ {% block head %}
+ <script src="{% static 'js/dist/Chart.bundle.js' %}"></script>
+<script>
+
+    function empty(){
+        alert(this);
+    }
+
+</script>
+
+ <style>
+    textarea {
+    overflow-y: scroll;
+    height: 200px;
+    width: 100%;
+
+ }
+.box{
+
+    margin:10px 10px 10px 10px;
+
+    background: #f2f2f2;
+
+}
+
+
+ </style>
+
+ {% endblock%}
+ {% block content %}
+
+
+<div class="wrapper">
+    <div class="row">
+         <div class="col-32">
+
+             <form id="reg" action="" method="post">
+                {% csrf_token %}
+                 {{ form }}
+
+                <div class="right">
+                         <button class="noselect" type="submit" id="SubmitMatch">
+                            Submit
+                        </button>
+
+                </div>
+             <form id="file">
+                 <input type="file" id="inputfile"/>
+             </form>
+             </form>
+         </div>
+           {% for res in rs %}
+
+           <div id="rs_{{ forloop.counter}}" class="wrapper">
+
+           {% ifequal res.total 0 %}
+           <div class="row box">
+               <div class="col-20">
+
+               <h6>Term:</h6>
+               <h4>{{ res.label }}</h4>
+
+               <h4>NO Result</h4>
+
+           </div>
+               </div>
+           {% else %}
+              <div class="row box">
+            <div class="col-20">
+               <h6>Term:</h6>
+               <h4>{{ res.label }}</h4>
+               <h6>Trial Number:</h6>
+               <h4>{{ res.doc }}</h4>
+               <h6>Term Frequency:</h6>
+               <h4>{{ res.total }}</h4>
+
+           </div>
+           <div class="col-6">
+               <canvas id="doughnut-summary_{{ forloop.counter }}" height="200" width="200"></canvas>
+           </div>
+           </div>
+            <script>
+          var ctx_summary_{{ forloop.counter }} = document.getElementById("doughnut-summary_{{ forloop.counter }}");
+
+          var doughnutdata_summary_{{ forloop.counter }} = {
+            labels: [
+                "Title",
+                "Exclusion",
+                "Inclusion",
+                "Purpose",
+                "Description",
+            ],
+            datasets: [
+                {
+                    data: [{{ res.Title }},{{ res.Exclusion }},{{ res.Inclusion }},{{ res.Purpose }},{{ res.description }},],
+                    backgroundColor: [
+                        "#68dff0",
+                        "#36A2EB",
+                        "#800000",
+                        "#006666",
+                        "#669999"
+                    ],
+                    hoverBackgroundColor: [
+                        "#FF6384",
+                        "#4d9900",
+                        "#FFCE56",
+                        "#adc2eb",
+                        "#c4ff4d"
+                    ]
+                }]
+        };
+        var myDoughnutChart_summary_{{ forloop.counter }} = new Chart(ctx_summary_{{ forloop.counter }}, {
+        type: 'doughnut',
+        data: doughnutdata_summary_{{ forloop.counter }},
+        options:{
+            legend:{
+            display:false,
+            },
+            tooltips: {
+            callbacks: {
+                label: function(tooltipItem, data) {
+                    var allData = data.datasets[tooltipItem.datasetIndex].data;
+                    var tooltipLabel = data.labels[tooltipItem.index];
+                    var tooltipData = allData[tooltipItem.index];
+                    var total = 0;
+                    for (var i in allData) {
+                        total += allData[i];
+                    }
+                    var tooltipPercentage = Math.round((tooltipData / total) * 100);
+                    return tooltipLabel + ': ' + tooltipData + ' (' + tooltipPercentage + '%)';
+                }
+            }
+        }
+        }
+       });
+
+
+        </script>
+
+
+           {% endifequal %}
+
+           </div>
+
+
+           {% endfor %}
+
+
+
+    </div>
+
+    </div>
+
+
+
+
+
+ {% endblock %}
+
+ {% block script %}
+
+    var control = document.getElementById("inputfile");
+    if(control){ control.addEventListener("change", function(event){
+        
+         var reader = new FileReader();
+         reader.onload = function(event){
+             var contents = event.target.result;
+               document.getElementById('id_reg').value = contents;
+         };
+         reader.onerror = function(event){
+             console.error("File could not be read! Code " + event.target.error.code);
+         };
+         
+         reader.readAsText(control.files[0]);
+     }, false);
+ };
+
+
+
+
+ {% endblock %}

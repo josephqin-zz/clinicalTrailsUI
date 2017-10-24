@@ -1,0 +1,69 @@
+{% extends "base_msp.html" %}
+
+{% block title %}Misspelled Gene Cases{% endblock %}
+{% block content %}
+
+{% if obj %}
+
+<table id="dataTable" class="hover" cellspacing="0" width="100%">
+    <thead>
+    <tr>
+        <th></th>
+        <th>Canonical Gene</th>
+        <th>frequency</th>
+        <th>Potential Candidate</th>
+        <th>frequency</th>
+
+        <th>Gestalt Similarity</th>
+    </tr>
+    </thead>
+    <tfoot>
+    <tr>
+        <th></th>
+        <th>Canonical Gene</th>
+        <th>frequency</th>
+        <th>Potential Candidate</th>
+        <th>frequency</th>
+
+        <th>Gestalt Similarity</th>
+    </tr>
+    </tfoot>
+
+    <tbody>
+    {% for b in obj %}
+    <tr>
+        <td><a href="./{{ b.word.id }}/{{ b.gene.id }}/">&#187;</a></td>
+
+        <td>{{ b.gene }}</td>
+        <td>{{ b.gene.frequency }}</td>
+        <td><a href="./{{ b.word.id }}/{{ b.gene.id }}/">{{ b.word }}</a></td>
+        <td>{{ b.word.frequency }}</td>
+        <td>{{ b.score }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+
+<div id="search" class="section">
+    <h3>Set Threshold</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit"/>
+    </form>
+
+</div>
+
+
+{% endblock %}
+
+{% block script  %}
+$(document).ready(function () {
+$('#dataTable').dataTable();
+});
+{% endblock %}

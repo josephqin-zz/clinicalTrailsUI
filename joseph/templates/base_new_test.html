@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+		<!-- BASICS -->
+        <meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>PTEN</title>
+        <meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		
+        <link rel="stylesheet" href="{% static 'css/stylesheet.css'%}" type="text/css" charset="utf-8">
+        <link rel="stylesheet" href="{% static 'assets/centralesans/stylesheet.css'%}" type="text/css" charset="utf-8" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        {% block head %}{% endblock %}
+
+    </head>
+
+    <body>
+     <div class="TopBar clearfix row">
+        <ul class='left-align middle Company'>
+            <li>PHILIPS</li>
+        </ul>
+        <ul class='middle Application'>
+            <li><a href="https://atlas.natlab.research.philips.com/confluence/display/PTEN/PTEN+Home">PTEN</a></li>
+        </ul>
+    </div>
+
+    <div class="SubTopBar clearfix row">
+        <ul class="topnav middle" id="myTopnav">
+           				<li><a href="/joseph/trialmatch/">Trial Match</a></li>
+            			<li><a href="/joseph/landscape/">LandScape</a></li>
+            			<li><a href="/joseph/test/">Validation</a></li>
+            			<li><a >Beacon</a></li>
+            			<li><a href="/joseph/diff/">Diff Tool</a></li>
+						<li><a href="/joseph/misspelling/">Misspelled Genes</a></li>
+            <li class="icon">
+                <a href="javascript:void(0);" onclick="myFunction()">&#9776;</a>
+            </li>
+        </ul>
+    </div>
+<main class='clearfix'>
+
+
+     {% block content %}{% endblock %}
+
+</main>
+	
+
+
+        <script type="text/javascript">
+           {% block script %}{% endblock %}
+        </script>
+	</body>
+</html>

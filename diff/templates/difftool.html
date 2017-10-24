@@ -1,0 +1,148 @@
+{% extends "base_new.html" %}
+{% block head %}
+
+    <style>
+    .after_hl{
+    font-family: monospace;
+    font-weight: bold;
+    color:red;
+    position:absolute;
+    background:none;
+    display:inline-block;
+    line-height:2;
+    margin:-15px 0px 0px 0px;
+
+
+    }
+    textarea {
+    overflow-y: scroll;
+    height: 200px;
+    width: 100%;
+    resize: none;
+    }
+    .before_hl{
+    font-family: monospace;
+    font-weight: bold;
+    background:#c4ffb3;
+    }
+
+    .context{
+
+    }
+    .box {
+      font-family: monospace;
+      font-size:15px;
+      margin: 20px 20px 20px 20px;
+      background: rgba(255,255,255,0.2);
+      padding: 35px 35px 35px 35px;
+      border: 2px solid #fff;
+      line-height: 2.5;
+      background-clip: padding-box;
+    }
+
+    </style>
+
+{% endblock %}
+{% block content %}
+
+       <section class="section">
+        <div class="container">
+        <div class="row ">
+            <div class="col-md-12">
+            <h3>Choose a case</h3>
+            <form id="case_form" action="" method="post"  enctype="multipart/form-data" class="box">
+             {% csrf_token %}
+             {{ caseform }}
+            <div class="right">
+                        <button class="noselect" name="casebtn" type="submit" id="CaseSubmit">
+                            Submit
+                        </button>
+            </div>
+            </form>
+
+         </div>
+
+           {% if after %}
+            <div class="col-md-12">
+                <h3> The Differences</h3>
+                <p class="box">{{ after|safe }}</p>
+            </div>
+
+           {% endif %}
+            <div id="search" class="col-md-12">
+                <h3>Case Input</h3>
+                <form id="diff_form" action="" method="post"  enctype="multipart/form-data" class="box">
+                 {% csrf_token %}
+                    <div>
+                    <label for="cname">CaseName</label>
+                    <input type="text" maxlength="150" id="cname" name="caseName">
+                    </div>
+                 {% for field in diffform %}
+                   <label for="id_{{ field.name }}">{{ field.label }}</label>
+                   <input type="file" id="file_{{ field.name }}"/>
+                 {{ field }}
+                 {% endfor %}
+                <div class="right">
+                            <button class="noselect" type="submit" name="diffbtn" id="SubmitMatch">
+                                Submit
+                            </button>
+                            <button class="noselect"  id="btnSave">
+                                Save
+                            </button>
+                </div>
+                </form>
+            </div>
+        </div>
+            </div>
+           </section>
+{% endblock %}
+
+{% block script %}
+
+    var control_before = document.getElementById("file_before");
+    var control_after = document.getElementById("file_after");
+    if(control_before){ control_before.addEventListener("change", function(event){
+
+         var reader = new FileReader();
+         reader.onload = function(event){
+             var contents = event.target.result;
+               document.getElementById('id_before').value = '';
+               document.getElementById('id_before').value = contents;
+         };
+         reader.onerror = function(event){
+             console.error("File could not be read! Code " + event.target.error.code);
+         };
+
+         reader.readAsText(control_before.files[0]);
+     }, false);
+ };
+if(control_after){ control_after.addEventListener("change", function(event){
+
+         var reader = new FileReader();
+         reader.onload = function(event){
+             var contents = event.target.result;
+               document.getElementById('id_after').value = '';
+               document.getElementById('id_after').value = contents;
+         };
+         reader.onerror = function(event){
+             console.error("File could not be read! Code " + event.target.error.code);
+         };
+
+         reader.readAsText(control_after.files[0]);
+     }, false);
+ };
+   $("#btnSave").click(function(){
+
+
+       $.post('./save/',$("#diff_form").serialize(),function(data){
+
+             alert(data);
+
+            });
+
+
+     e.preventDefault();
+    });
+
+
+ {% endblock %}

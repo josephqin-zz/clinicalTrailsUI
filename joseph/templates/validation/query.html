@@ -1,0 +1,205 @@
+{% extends "base_validation.html" %}
+{% load staticfiles %}
+{% block head %}
+<script src="{% static 'js/dist/Chart.bundle.js' %}"></script>
+{% endblock %}
+{% block sub_content %}
+
+
+
+
+<section id="search" class="section">
+
+    <div class="section-header">
+    <h3>Add Query</h3>
+    </div>
+    <form action="" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+    </form>
+
+</section>
+
+<section id="section-works" class="section appear clearfix">
+            <div class="container">
+                
+                <div class="row mar-bot40">
+                    <div class="col-md-offset-3 col-md-6">
+                        <div class="section-header">
+                            <h2 class="section-heading animated" data-animation="bounceInUp">Queries</h2>
+
+                        </div>
+                    </div>
+                </div>
+                    
+                        <div class="row">
+                        <nav id="filter" class="col-md-12 text-center">
+                            <ul>
+                              <li><a href="#" class="current btn-theme btn-small" data-filter="*">All</a></li>
+                              <li><a href="#"  class="btn-theme btn-small" data-filter=".finished" >Done</a></li>
+                              <li><a href="#"  class="btn-theme btn-small" data-filter=".unfinished">UnFinished</a></li>
+                              
+                            </ul>
+                          </nav>
+                          <div class="col-md-12">
+                            <div class="row">
+                              <div class="portfolio-items isotopeWrapper clearfix" id="3">
+                              
+                              {% for b in obj %}
+                                <article class="col-md-4 isotopeItem {% ifequal b.resultNUM b.finishedNUM %}finished{% else %}unfinished{% endifequal %}">
+                                    <div class="portfolio-item">
+                                        <div class="portfolio-item txt">
+                                        <h5><span class="by">  Disease </span>  {{ b.disease }} </br>
+                                                {% if b.gene %}
+                                                <span class="by">  Gene </span>  {{ b.gene }} </br>
+                                                {% endif %}
+                                                {% if b.age %}
+                                                <span class="by">  Age </span>  {{ b.age }} </br>
+                                                {% endif %}
+                                                {% if b.gender %}
+                                                <span class="by">  Gender </span>  {{ b.gender }} </br>
+                                                {% endif %}
+                                                {% if b.stage %}
+                                                {{ b.stage }} </br>
+                                                {% endif %}
+                                                {% if b.grade %}
+                                                {{ b.grade }} </br>
+                                                {% endif %}
+                                                </h5>
+
+                                         <div class="portfolio-desc align-center">
+                                            <div class="folio-info">
+                                                <h5><a href="./{{ b.id }}/">Validate</a></h5>
+                                                <h5><a href="./result/{{ b.id }}/"> Results</a></h5>
+                                                <a href="#popup{{ forloop.counter }}" class="fancybox"><i class="fa fa-plus fa-2x"></i></a>
+                                             </div>
+                                         </div>
+                                            </div>
+                                            <div id="popup{{ forloop.counter }}" class="portfolio-item overlay">
+                                            
+
+                                            <h2>Query</h2>
+                                            <div class="content">
+                                                <h5><span class="by">  Disease </span>  {{ b.disease }} </br>
+                {% if b.gene %}
+                <span class="by">  Gene </span>  {{ b.gene }} </br>
+                {% endif %}
+                {% if b.age %}
+                <span class="by">  Age </span>  {{ b.age }} </br>
+                {% endif %}
+                {% if b.gender %}
+                <span class="by">  Gender </span>  {{ b.gender }} </br>
+                {% endif %}
+                {% if b.stage %}
+                {{ b.stage }} </br>
+                {% endif %}
+                {% if b.grade %}
+                {{ b.grade }} </br>
+                {% endif %}
+                <span class="by">  Total Result </span> {{ b.resultNUM }} |
+                <span class="by">  Finished </span> {{ b.finishedNUM }} |
+                <span class="by">  eligible  </span> {{ b.positive }} |
+                <span class="by">  not eligible </span> {{ b.negtive }} |
+                </h5>
+                                            </div>
+                                             <div>
+                            <canvas id="doughnut-{{ forloop.counter }}" height="400px" width="1000px"></canvas>
+                            <canvas id="bar-{{ forloop.counter }}" height="400px" width="1000px"></canvas>
+    
+                                            </div>
+                                            <script>
+      var ctx_{{ forloop.counter }} = document.getElementById("doughnut-{{ forloop.counter }}");
+      var doughnutdata_{{ forloop.counter }} = {
+        labels: [
+            "rest",
+            "eligible",
+            "non-eligible"
+        ],
+        datasets: [
+            {
+                data: [{{ b.resultNUM }}-{{ b.finishedNUM }}, {{ b.positive }}, {{ b.negtive }}],
+                backgroundColor: [
+                    "#68dff0",
+                    "#36A2EB",
+                    "#800000"
+                ],
+                hoverBackgroundColor: [
+                    "#FF6384",
+                    "#4d9900",
+                    "#FFCE56"
+                ]
+            }]
+    };
+    var myDoughnutChart_{{ forloop.counter }} = new Chart(ctx_{{ forloop.counter }}, {
+    type: 'doughnut',
+    data: doughnutdata_{{ forloop.counter }},
+   });
+
+   var bar_{{ forloop.counter }} = document.getElementById("bar-{{ forloop.counter }}");
+   var BarChart_{{ forloop.counter }} = new Chart(bar_{{ forloop.counter }}, {
+            type: 'bar',
+            data: {
+                labels: [
+                {% for s in b.section %}
+                "{{ s.section }}",
+                {% endfor %}
+                ],
+                datasets: [{
+                    label: "Number",
+                    backgroundColor: "rgba(255, 102, 153,0.75)",
+                    borderColor: "rgba(255,99,132,1)",
+                    pointBackgroundColor: "rgba(255,99,132,1)",
+                    pointBorderColor: "#fff",
+                    pointHoverBackgroundColor: "#fff",
+                    pointHoverBorderColor: "rgba(255,99,132,1)",
+                    data: [
+                    {% for s in b.section %}
+                    {{ s.num }},
+                    {% endfor %}
+                    ],
+
+                }]
+            },
+            options: {
+                legend:{
+                display:false
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+    }
+
+        });
+
+
+
+
+
+    </script>
+                                         </div>
+                                    </div>
+                                </article>
+
+                               {% endfor %} 
+                                </div>
+                                        
+                            </div>
+                                     
+
+                            </div>
+                        </div>
+                
+            </div>
+</section>
+
+
+
+
+
+
+{% endblock %}

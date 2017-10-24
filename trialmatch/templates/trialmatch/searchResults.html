@@ -1,0 +1,112 @@
+{% include "trialmatch/trial_list.html" %}
+
+<html>
+<head>
+<style>
+mark { 
+    background-color: lightblue;
+    color: black;
+}
+</style>
+<script src="https://maps.googleapis.com/maps/api/js"></script>
+<script>
+  function initialize() {
+	var mapCanvas = document.getElementById('map');
+	var mapOptions = {
+	  center: new google.maps.LatLng(41.0852969, -73.8097434),
+	  zoom: 15,
+	  mapTypeId: google.maps.MapTypeId.ROADMAP
+	}
+	var map = new google.maps.Map(mapCanvas, mapOptions)
+	
+  	geocoder = new google.maps.Geocoder();
+  	var address = '{{address}}'
+  	geocoder.geocode( { 'address': address}, function(results, status) {
+      	if (status == google.maps.GeocoderStatus.OK) {
+        		map.setCenter(results[0].geometry.location);
+        		var marker = new google.maps.Marker({
+            		map: map,
+            		position: results[0].geometry.location
+       		});
+      	} else {
+        		/* alert("Geocode was not successful for the following reason: " + status); */
+        		var marker = new google.maps.Marker({
+     			position: new google.maps.LatLng(41.0852969, -73.8097434),
+     			map: map
+     		});
+     	     }
+    	});	
+  }
+  
+  google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+</head>
+    
+
+<body>
+<div style="text-align:center;">
+
+<div style="margin-top:1% ;margin-bottom:1%   "><b style="color:cornflowerblue">Queried for </b>
+{% if disease %}
+	<b>Disease: </b> {{disease}}
+{% endif %} 
+{% if gene %}
+	<b>Gene: </b>{{gene}}
+{% endif %} 
+{% if aas %}
+	<b>AAS: </b>{{aas}}
+{% endif %} 
+{% if age %}
+	<b>Age: </b>{{age}}
+{% endif %} 
+{% if gender and gender != "Select" %}
+	<b>Gender: </b>{{gender}}
+{% endif %} 
+{% if stage and stage != "Select" %}
+	<b>Stage: </b>{{stage}}
+{% endif %}
+{% if grade and grade != "Select" %}
+    <b>Grade: </b>{{grade}}
+{% endif %} 
+
+</div>
+<div style="margin-top:1% ;  "><b>Total Number of trials found for this search : </b>{{total}}</div></div>
+<div class="container-fluid" >
+<div  id="map" style=" float:left; width:45%; margin-left:1%"></div>
+
+
+
+{% for i in records %}
+
+<div  class="list-group-item" style="cursor:pointer; background-color:lavender;  width:50%;margin-left: 1%; margin-right:1%;margin-bottom:1%;  margin-top:1%; float:right;" type ="submit">
+ 
+
+		<p><b>NCT ID:  </b><a target="_blank" href="https://clinicaltrials.gov/ct2/show/{{ i.id }}"> {{ i.id }} </a></p>
+	   	<p><b>Title:  </b>{% if i.highlight.official_title.0 %}
+	   	{{  i.highlight.official_title.0  | truncatewords:30 |safe }}
+	   	{% elif i.highlight.brief_title.0 %}
+	   	{{ i.highlight.brief_title.0 | truncatewords:30 | safe}}
+	   	{% elif i.source.official_title %}
+	   	{{ i.source.official_title | truncatewords:30 }}
+	   	{% else %}
+	   	{{ i.source.brief_title }}
+	   	{% endif %} </p>
+	   	<p><b> Purpose:  </b>	{% if i.highlight.Purpose.0 %}
+	   	{{  i.highlight.Purpose.0  | truncatewords:30 |safe }}
+	   	{% else %}
+	   	{{ i.source.Purpose | truncatewords:30 }}
+	   	{% endif %} </p>
+	   	<form name="formName" action="/trialmatch/trialpage/" method ="get" >  
+		{% csrf_token %}
+		<input type="hidden" name="rec" value={{ i.id }} >
+		<input type="hidden" name="records" value={{ i.records }} >
+		<input type="submit"  value="See Details .." style="background: transparent; float:right;" >
+		</form>
+	   		   
+
+    </div>
+    
+	{% endfor %}
+
+</body>
+</html>

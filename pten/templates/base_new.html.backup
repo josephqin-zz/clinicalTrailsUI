@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+		<!-- BASICS -->
+        <meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>PTEN</title>
+        <meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		
+        <link rel="stylesheet" href="{% static 'stylesheets/stylesheet.css'%}" type="text/css" charset="utf-8">
+        <link rel="stylesheet" href="{% static 'assets/centralesans/stylesheet.css'%}" type="text/css" charset="utf-8" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        {% block head %}{% endblock %}
+
+    </head>
+
+    <body>
+     <div class="TopBar clearfix">
+        <ul class='left-align middle Company'>
+            <li style="padding-top:13px;">PHILIPS</li>
+        </ul>
+        <ul class='middle Application'>
+            <li style="padding-top:13px;"><a href="https://atlas.natlab.research.philips.com/confluence/display/PTEN/PTEN+Home">PTEN</a></li>
+        </ul>
+    </div>
+
+    <div class="SubTopBar clearfix">
+        <ul class="topnav middle" id="myTopnav">
+           				<li style="padding-top:13px;"><a href="/pten/">Trial Match</a></li>
+            			<li style="padding-top:13px;"><a href="/landscape/">LandScape</a></li>
+            			<li style="padding-top:13px;"><a href="/validation/">Validation</a></li>
+            			<li style="padding-top:13px;"><a>Beacon</a></li>
+            			<li style="padding-top:13px;"><a href="/diff/">Diff Tool</a></li>
+						<li style="padding-top:13px;"><a href="/joseph/misspelling/">Misspelled Genes</a></li>
+            <li class="icon">
+                <a href="javascript:void(0);" onclick="myFunction()">&#9776;</a>
+            </li>
+        </ul>
+    </div>
+<main class='clearfix'>
+
+
+     {% block content %}{% endblock %}
+
+</main>
+	
+
+
+        <script type="text/javascript">
+           {% block script %}{% endblock %}
+        </script>
+	</body>
+</html>
